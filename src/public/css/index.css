@@ -1,0 +1,9 @@
+@import url(./_variables.scss);
+h1 {
+  height: 1px;
+  background-color: var(--color);
+  background-color: green;
+  background-color: yellow;
+}
+
+/*# sourceMappingURL=data:application/json;charset=utf-8,%7B%22version%22:3,%22sourceRoot%22:%22%22,%22sources%22:%5B%22../../resources/scss/index.scss%22%5D,%22names%22:%5B%5D,%22mappings%22:%22AAAQ;AAER;EACI;EACA;EACA;EACA%22,%22file%22:%22index.css%22%7D */
