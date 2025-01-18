@@ -1,0 +1,167 @@
+<form class="mt-4" id="form-action" method="POST" action="/courses/action">
+    <h3 class="">danh sách khóa học đã xóa</h3>
+    <div class="mb-4 d-flex justify-content-between align-items-center">
+        <a href="/me/courses">danh sách</a>
+         <div class="d-flex justify-content-between align-items-center">
+            <div class="form-check ml-4">
+                <input class="form-check-input" type="checkbox" name="selectAll" id="selectAll">
+                <label class="form-check-label" for="selectAll" style="user-select: none;">
+                        Chọn tất cả
+                </label>
+            </div>
+            <div style="margin: 0 20px;">
+                <select class="form-select" name="Action" aria-label="Default select example" required>
+                    <option value="">--hành động--</option>
+                    <option value="restore">khôi phục</option>
+                    <option value="delete-trash">xóa vĩnh viễn</option>
+                </select>
+            </div>
+            <button class="btn btn-primary btn-submit" type="submit" disabled>thực hiện</button>
+        </div>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">STT</th>
+                <th scope="col">Name</th>
+                <th scope="col">level</th>
+                <th scope="col" colspan="4">thời gian tạo</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each courses}}
+                <tr>
+                    <th scope="row">{{sum @index 1}}</th>
+                    <td>{{this.name}}</td>
+                    <td>{{this.level}}</td>
+                    <td>{{this.deletedAt}}</td>
+                    <td>
+                        <btn
+                            class="p-0 btn btn-link btn-restore"
+                            data-bs-id="{{this._id}}"
+                        >khôi phục</btn>
+                    </td>
+                    <td>
+                        <button
+                            type="button"
+                            class="btn btn-link p-0"
+                            data-bs-toggle="modal"
+                            data-bs-target="#deleteModal"
+                            data-bs-id="{{this._id}}"
+                        >xóa</button>
+                    </td>
+                    <td>
+                        <div class="form-check">
+                            <input class="form-check-input select" type="checkbox" name="idCheckeds[]" value="{{this._id}}" id="{{this._id}}">
+                        </div>
+                    </td>
+                </tr>
+            {{else}}
+                <tr>
+                    <td class="border-bottom-0" colspan="4">
+                        <p>danh sách trống.
+                            <a href="/me/courses">danh sách khóa học</a>
+                        </p>
+                    </td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</form>
+{{! Confirm delete course }}
+<div
+    class="modal fade"
+    id="deleteModal"
+    tabindex="-1"
+    aria-labelledby="deleteModalLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Xóa khóa học vĩnh viễn</h5>
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                ></button>
+            </div>
+            <div class="modal-body">
+                <h6>Khóa học sau khi xóa sẻ không thể khôi phục. Bạn có chắc muốn xóa khóa học!!!</h6>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger">Xóa</button>
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                >hủy</button>
+            </div>
+        </div>
+    </div>
+</div>
+{{! hidden form }}
+<form id="form-delete" method="POST"></form>
+<form id="form-restore" method="POST"></form>
+
+<script>
+    const deleteModal = document.getElementById('deleteModal'); 
+    const btn_restore = document.querySelectorAll('.btn-restore');
+    var formAction = document.getElementById('form-action');
+    var selectAll = document.getElementById('selectAll');
+    var btnSubmit = document.querySelector('.btn-submit');
+    var form_delete = document.getElementById('form-delete');
+    var form_restore = document.getElementById('form-restore');
+
+    {{!-- restore --}}
+    btn_restore.forEach((button) => {
+        button.addEventListener("click",() => {
+            var _id = button.getAttribute('data-bs-id');
+            form_restore.action = `/courses/${_id}/trash-restore?_method=PATCH`; 
+            form_restore.submit();
+        })
+    })
+    
+    {{!-- delete --}}
+    deleteModal.addEventListener('show.bs.modal', function (event) { 
+        var button = event.relatedTarget; 
+        var _id = button.getAttribute('data-bs-id');
+        form_delete.action = `/courses/${_id}/trash-delete?_method=DELETE`; 
+    }) 
+
+    var btn_danger = deleteModal.querySelector('.btn-danger');
+
+    btn_danger.addEventListener("click",() => { 
+        form_delete.submit(); 
+    })
+
+    var selects = document.querySelectorAll('.select');
+    selectAll.addEventListener("change",() => {
+        selects.forEach((checkbox) => {
+            checkbox.checked = selectAll.checked; 
+        })        
+        btnState(selects);
+    })
+
+    selects.forEach((select)=> {
+        select.addEventListener("change",()=>{
+            let isAllChecked = true;
+            selects.forEach((select) => {
+                isAllChecked = isAllChecked && select.checked; 
+            })
+            selectAll.checked = isAllChecked ? true : false;
+            btnState(selects);
+        })
+    })
+
+    function btnState(selects){
+        let isAllChecked = false;
+        selects.forEach((select) => {
+            isAllChecked = isAllChecked || select.checked; 
+        })
+        btnSubmit.disabled = !isAllChecked;
+    }
+
+ 
+</script>

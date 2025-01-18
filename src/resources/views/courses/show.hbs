@@ -1,0 +1,23 @@
+<div class="mt-4" >
+    <div class="row">
+        <div class="col-3">
+            <button>học ngay</button>
+            <ul>
+                <li>{{course.level}}</li>
+            </ul>
+        </div>
+        <div class="col-9">
+            <h3>{{course.name}}</h3>
+            <iframe
+                width="560"
+                height="315"
+                src="https://www.youtube.com/embed/{{course.idVideo}}"
+                title="{{course.name}}"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen
+            ></iframe>
+        </div>
+    </div>
+</div>
